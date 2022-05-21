@@ -78,7 +78,7 @@ def check_win():
         if row == "-":
             return
     game_won = True
-    champion = "It's a draw!"
+    print("It's a draw!")
 
 def isNumber(input):
     return True if input.isnumeric() else False
