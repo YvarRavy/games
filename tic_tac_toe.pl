@@ -2,6 +2,7 @@
 use strict;
 use warnings;
 use Scalar::Util qw(looks_like_number);
+
 our (@board) = (
     ["-", "-", "-"],
     ["-", "-", "-"],
@@ -13,6 +14,8 @@ my $game_won = 0;
 
 my $player1 = "X";
 my $player2 = "O";
+
+my $champion = "";
 
 sub print_board {
     for my $row (@board) {
@@ -28,6 +31,12 @@ sub is_number {
     my ($number) = @_;
     my $is_number = looks_like_number($number);
     return $is_number ? 1 : 0;
+};
+
+sub is_in_range {
+    my ($number) = @_;
+    my $is_in_range = ($number >= 1 && $number <= 9) ? 1 : 0;
+    return $is_in_range ? 1 : 0;
 };
 
 sub next_turn {
@@ -91,7 +100,7 @@ sub set_board {
         }
     } elsif ($input == "6") {
         if ($board [1][2] eq '-') {
-            $board[1][2] = get_turn();
+           $board[1][2] = get_turn();
             print "Player has chosen the mid right.\n";
         } else {
             print "That space is already taken.\n";
@@ -129,7 +138,31 @@ sub check_win {
     my ($input) = @_;
 
     if ($board[0][0] eq $board[0][1] && $board[0][1] eq $board[0][2] && $board[0][2] ne '-') {
-        print "Game over!\n";
+        $champion = "player " . get_turn() . " has won!";
+        $game_won = 1;
+    } elsif ($board[1][0] eq $board[1][1] && $board[1][1] eq $board[1][2] && $board[1][2] ne '-') {
+        $champion = "player " . get_turn() . " has won!";
+        $game_won = 1;
+    } elsif ($board[2][0] eq $board[2][1] && $board[2][1] eq $board[2][2] && $board[2][2] ne '-') {
+        $champion = "player " . get_turn() . " has won!";
+        $game_won = 1;
+    } elsif ($board[0][0] eq $board[1][0] && $board[1][0] eq $board[2][0] && $board[2][0] ne '-') {
+        $champion = "player " . get_turn() . " has won!";
+        $game_won = 1;
+    } elsif ($board[0][1] eq $board[1][1] && $board[1][1] eq $board[2][1] && $board[2][1] ne '-') {
+        $champion = "player " . get_turn() . " has won!";
+        $game_won = 1;
+    } elsif ($board[0][2] eq $board[1][2] && $board[1][2] eq $board[2][2] && $board[2][2] ne '-') {
+        $champion = "player " . get_turn() . " has won!";
+        $game_won = 1;
+    } elsif ($board[0][0] eq $board[1][1] && $board[1][1] eq $board[2][2] && $board[2][2] ne '-') {
+        $champion = "player " . get_turn() . " has won!";
+        $game_won = 1;
+    } elsif ($board[0][2] eq $board[1][1] && $board[1][1] eq $board[2][0] && $board[2][0] ne '-') {
+        $champion = "player " . get_turn() . " has won!";
+        $game_won = 1;
+    } else {
+        return 0;
     }
 };
 
@@ -138,10 +171,10 @@ sub player_turn {
     print "Please enter a number between 1-9: ";
     my $input = <STDIN>;
     print join("User input= ",  $input), "\n";
-    if (is_number($input)) {
+    if (is_number($input) && is_in_range($input)) {
         my $set = set_board($input);
         if ($set) {
-            #check_win();
+            check_win();
             next_turn();
         } else {
             player_turn();
@@ -161,7 +194,7 @@ while (1) {
     player_turn();
 
     if ($game_won) {
-        print "Player $turn won!\n";
+        print $champion;
         last;
     }
 };
