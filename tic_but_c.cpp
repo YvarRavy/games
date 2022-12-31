@@ -1,139 +1,72 @@
 #include <iostream>
 void player_turn();
 
-std::string board[3][3] = {
-    {"-", "-", "-"},
-    {"-", "-", "-"},
-    {"-", "-", "-"}
+std::string board[9] = {
+    "-", "-", "-",
+    "-", "-", "-",
+    "-", "-", "-"
 };
 
-char player_1 = 'X';
-char player_2 = 'O';
-int turn = 1;
+bool turn = true;
 
 std::string champion;
 bool game_won = false;
 
 void print_board() {
-    // loop through board
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            std::cout << board[i][j] << " ";
-        }
-        std::cout << std::endl;
+    for (int i = 0; i < 9; i++) {
+        std::cout << board[i];
+        if (i == 2 || i == 5 || i == 8) {
+            std::cout << std::endl;
+        };
     }
 }
 
 int is_number(std::string input) {
     char c = input[0];
-    std::cout << c << std::endl;
     if (std::isdigit(c) == 0) return false;
     if (c < '1' || c > '9') return false;
     return true;
 }
 
-char get_turn() {
-    if (turn % 2 == 0) {
-        return player_2;
-    } else {
-        return player_1;
-    }
+int get_turn() {
+    return (turn) ? 88 : 79;
 }
 
 void next_turn() {
-    if (turn == 1) {
-        turn = 2;
-    } else {
-        turn = 1;
-    }
+    turn = !turn;
 }
 
 void check_win() {
-    if ((board[0][0] == board[0][1]) && (board[0][1] == board[0][2]) && board[0][2] != "-" ||
-        (board[1][0] == board[1][1]) && (board[1][1] == board[1][2]) && board[1][2] != "-" ||
-        (board[2][0] == board[2][1]) && (board[2][1] == board[2][2]) && board[2][2] != "-" ||
-        (board[0][0] == board[1][0]) && (board[1][0] == board[2][0]) && board[2][0] != "-" ||
-        (board[0][1] == board[1][1]) && (board[1][1] == board[2][1]) && board[2][1] != "-" ||
-        (board[0][2] == board[1][2]) && (board[1][2] == board[2][2]) && board[2][2] != "-" ||
-        (board[0][0] == board[1][1]) && (board[1][1] == board[2][2]) && board[2][2] != "-" ||
-        (board[0][2] == board[1][1]) && (board[1][1] == board[2][0]) && board[2][0] != "-"
-    ) {
-        champion = "Player " + std::to_string(get_turn()) + " wins!";
-        game_won = true;
+    int win_conditions[8][3] = {
+        {0 , 1, 2},
+        {3 , 4, 5},
+        {6 , 7, 8},
+        {0 , 3, 6},
+        {1 , 4, 7},
+        {2 , 5, 8},
+        {0 , 4, 8},
+        {2 , 4, 6},
+    };
+    for (int* positions : win_conditions) {
+        if (
+            (board[positions[0]] == board[positions[1]]) &&
+            (board[positions[1]] == board[positions[2]]) &&
+            (board[positions[2]] != "-")
+        ) {
+            game_won = true;
+        }
     }
 }
 
-void set_board(std::string input) {
-    std::cout << input;
-    if (input == "1") {
-        if (board[0][0] == "-") {
-            board[0][0] = get_turn();
-        } else {
-            std::cout << "Invalid move" << std::endl;
-            player_turn();
-        }
-    } else if (input == "2") {
-        if (board[0][1] == "-") {
-            board[0][1] = get_turn();
-        } else {
-            std::cout << "Invalid move" << std::endl;
-            player_turn();
-        }
-    } else if (input == "3") {
-        if (board[0][2] == "-") {
-            board[0][2] = get_turn();
-        } else {
-            std::cout << "Invalid move" << std::endl;
-            player_turn();
-        }
-    } else if (input == "4") {
-        if (board[1][0] == "-") {
-            board[1][0] = get_turn();
-        } else {
-            std::cout << "Invalid move" << std::endl;
-            player_turn();
-        }
-    } else if (input == "5") {
-        if (board[1][1] == "-") {
-            board[1][1] = get_turn();
-        } else {
-            player_turn();
-            std::cout << "Invalid move" << std::endl;
-        }
-    } else if (input == "6") {
-        if (board[1][2] == "-") {
-            board[1][2] = get_turn();
-        } else {
-            std::cout << "Invalid move" << std::endl;
-            player_turn();
-        }
-    } else if (input == "7") {
-        if (board[2][0] == "-") {
-            board[2][0] = get_turn();
-        } else {
-            std::cout << "Invalid move" << std::endl;
-            player_turn();
-        }
-    } else if (input == "8") {
-        if (board[2][1] == "-") {
-            board[2][1] = get_turn();
-        } else {
-            std::cout << "Invalid move" << std::endl;
-            player_turn();
-        }
-    } else if (input == "9") {
-        if (board[2][2] == "-") {
-            board[2][2] = get_turn();
-        } else {
-            std::cout << "Invalid move" << std::endl;
-            player_turn();
-        }
-    } else {
-            std::cout << "fucking retard act normal" << std::endl;
+void set_board(int input) {
+    int correct_pos = input - 1;
+    if (board[correct_pos] != "-") {
+        std::cout << "Invalid move" << std::endl;
+        return;
     }
 
+    board[correct_pos] = (char)get_turn();
     check_win();
-    next_turn();
 }
 
 void player_turn() {
@@ -142,7 +75,7 @@ void player_turn() {
     std::cout << "Please enter a number between 1 and 9: " << std::endl;
     std::cin >> input;
     if (is_number(input)) {
-        set_board(input);
+        set_board(std::stoi(input));
     } else {
         std::cout << "Invalid input" << std::endl;
         player_turn();
@@ -152,17 +85,15 @@ void player_turn() {
 int main() {
     while (true) {
         std::cout << "Player " << turn << " turn: " << std::endl;
-        if (turn % 2 == 0) {
-            player_turn();
-        } else {
-            player_turn();
-        }
+        player_turn();
         std::cin.get();
 
         if (game_won) {
-            std::cout << champion << std::endl;
+            std::cout << (char)get_turn();
+            printf("Player %c wins!", (char)get_turn());
             break;
         }
+        next_turn();
     }
     return 0;
 }
